@@ -24,8 +24,13 @@ def determine_price(spex, nachspex, guest_type, alcohol_free, coupon):
             else:
                 price += 25
 
-    if nachspex:
+    if nachspex and spex:
         price += 15
+        if alcohol_free:
+            price -= 3
+
+    if nachspex: #only nachspex
+        price += 18
         if alcohol_free:
             price -= 3
 
