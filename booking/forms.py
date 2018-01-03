@@ -7,7 +7,7 @@ REGISTERING_OPTIONS = (
 )
 
 STUDENT = (
-    ('student', 'Studerande eller barn'),
+    ('student', 'Studerande och barn'),
     ('phux', 'Phux'),
     ('not_student', 'Inte studerande'),
 
