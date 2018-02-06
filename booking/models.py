@@ -7,7 +7,7 @@ class Participant(models.Model):
     email = models.EmailField()
     spex = models.BooleanField()
     nachspex = models.BooleanField()
-    diet = models.CharField(max_length=128, default = "")
+    diet = models.CharField(max_length=128, default = "", blank=True)
     alcoholfree = models.BooleanField()
     avec = models.CharField(max_length=256, default = "")
     comment = models.TextField(default="none")
@@ -16,6 +16,7 @@ class Participant(models.Model):
     uuid = models.CharField(max_length=100,default="")
     student = models.CharField(max_length=100,default="")
     price = models.IntegerField(default=0)
+    payment_ok = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name

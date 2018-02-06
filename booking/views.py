@@ -5,6 +5,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, render_to_response
 from django.template import RequestContext
 from booking.models import *
+from django.contrib.auth.decorators import login_required
 import datetime, math
 import uuid
 
@@ -38,6 +39,9 @@ def determine_price(spex, nachspex, guest_type, alcohol_free, coupon):
 
 
 # Create your views here.
+@login_required(redirect_field_name='/../enrolled', login_url='/admin')
+def enrolled(request):
+    return render(request, 'enrolled.html', {'participants': Participant.objects.all()})
 
 def ticket(request, participant_id):
     if Participant.objects.filter(uuid = participant_id).exists():
