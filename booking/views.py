@@ -39,7 +39,7 @@ def determine_price(spex, nachspex, guest_type, alcohol_free, coupon):
 
 
 # Create your views here.
-@login_required(redirect_field_name='/../enrolled', login_url='/admin')
+@login_required(login_url='/admin')
 def enrolled(request):
     return render(request, 'enrolled.html', {'participants': Participant.objects.all()})
 
@@ -223,7 +223,7 @@ def send(request):
 
         print(ticket_url)
         subject, sender, recipient = 'Anmälan till Kårspexets föreställning', 'Kårspexambassaden <karspex@teknolog.fi>', email
-        content = "Tack för din anmälan till Kårspexets Finlandsföreställning den 10 februari. \n Din biljett hittar du på "+ ticket_url +". Vänligen ta fram biljetten när du går in i teatern för att försnabba inträdet. \n Betala " + str(price) + " € till konto FI02 5723 0220 4788 41 (mottagare Kårspexambassaden) med för- och efternamn som meddelande senast 5.2.2018.\n\nMed vänliga hälsningar,\nKårspexambassaden"
+        content = "Tack för din anmälan till Kårspexets Finlandsföreställning den 10 februari. \n Din biljett hittar du på "+ ticket_url +". Vänligen ta fram biljetten när du går in i teatern för att försnabba inträdet. \n Betala " + str(price) + " € till konto FI02 5723 0220 4788 41 (mottagare Kårspexambassaden) med för- och efternamn som meddelande. Betalningen ska vara framme senast 9.2.2018. Ifall betalningen inte hinner till detta, ber vi dig vänligen ta med jämna pengar till teatern.\n\nMed vänliga hälsningar,\nKårspexambassaden"
         send_mail(subject, content, sender, [email], fail_silently=False)
 
         return HttpResponseRedirect('/register/thanks/')
