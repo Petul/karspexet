@@ -124,6 +124,5 @@ STATICFILES_DIRS = (
 )
 
 STATIC_URL = '/static/'
-STATIC_ROOT = 
 
 EMAIL_HOST = 'smtp.ayy.fi'
