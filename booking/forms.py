@@ -1,9 +1,9 @@
 from django import forms
 
 REGISTERING_OPTIONS = (
-    #('spex_and_nachspex', 'Spex och Nachspex'),
+    ('spex_and_nachspex', 'Spex och Nachspex'),
     ('only_spex', 'Endast Spex'),
-    #('only_nachspex', 'Endast Nachspex')
+    ('only_nachspex', 'Endast Nachspex')
 )
 
 STUDENT = (
@@ -19,7 +19,7 @@ class registerForm(forms.Form):
     register_choice = forms.ChoiceField(
         widget = forms.Select,
         choices = REGISTERING_OPTIONS,
-        label = "Välj biljettyp. Obs! försäljningen av Nachspexbiljetter har slutat",
+        label = "Välj biljettyp",
     )
     student = forms.ChoiceField(
         widget = forms.Select,
