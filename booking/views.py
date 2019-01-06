@@ -155,16 +155,12 @@ def register(request):
 
 def send(request):
     if request.method == 'POST':
-        comment = request.POST['comment']
-        name = request.POST['name']
-        email = request.POST['email']
         spex = request.POST['spex']
         nachspex = request.POST['nachspex']
         coupon_code = request.POST['coupon']
         alcohol_free = request.POST['alcohol_free']
-        avec = request.POST['avec']
-        diet = request.POST['diet']
         guest_type = request.POST['student']
+        email = request.POST['email']
 
         # Apparently the 'True' is not a Boolean and needs to be converted, wtf
         # TODO: Change to 0 and 1 to avoid this step
@@ -183,27 +179,34 @@ def send(request):
         else:
             alcohol_free = False
 
-        status_code, coupon = verify_coupon(form['coupon'])
+        status_code, coupon = None, None
+        if request.POST['coupon']:
+            status_code, coupon = verify_coupon(request.POST['coupon'])
         price, cheaper_used = determine_price(spex, nachspex, guest_type, alcohol_free, coupon)
 
+
         new_participant = Participant(
-            name=name,
+            name=request.POST['name'],
             email=email,
             spex=spex,
             nachspex=nachspex,
             alcoholfree=alcohol_free,
-            diet=diet,
-            avec=avec,
-            comment=comment,
+            diet=request.POST['diet'],
+            avec=request.POST['avec'],
+            comment=request.POST['comment'],
             student=guest_type,
-            price=price
+            price=price,
+            uuid=uuid.uuid4()
         )
-
-        new_participant.uuid = uuid.uuid4()
         new_participant.save()
-        ticket_url = 'https://karspex.teknologforeningen.fi/ticket/'+str(new_participant.uuid)
+
+        if status_code == 1 and not cheaper_used:
+            coupon.times_used += 1
+            coupon.save()
+
+        ticket_url = 'https://karspex.teknologforeningen.fi/ticket/{}'.format(new_participant.uuid)
         subject, sender = 'Anmälan till Kårspexets föreställning', 'Kårspexambassaden <karspex@teknolog.fi>'
-        content = "Tack för din anmälan till Kårspexets Finlandsföreställning den 10 februari. \n Din biljett hittar du på "+ ticket_url +". Vänligen ta fram biljetten när du går in i teatern för att försnabba inträdet. \n Betala " + str(price) + " € till konto FI02 5723 0220 4788 41 (mottagare Kårspexambassaden) med för- och efternamn som meddelande. Betalningen ska vara framme senast 9.2.2018. Ifall betalningen inte hinner till detta, ber vi dig vänligen ta med jämna pengar till teatern.\n\nMed vänliga hälsningar,\nKårspexambassaden"
+        content = "Tack för din anmälan till Kårspexets Finlandsföreställning den 23 februari.\nDin biljett hittar du på {}. Vänligen ta fram biljetten när du går in i teatern för att försnabba inträdet.\nBetala {}€ till konto FI02 5723 0220 4788 41 (mottagare Kårspexambassaden) med meddelandet \"Kårspex, Förnamn Efternamn\". Betalningen ska vara framme senast 22.2.2019. Ifall betalningen inte hinner till detta, ber vi dig vänligen ta med jämna pengar till teatern.\n\nMed vänliga hälsningar,\nKårspexambassaden.".format(ticket_url, price)
         if DEBUG:
             print('Subject: {}\nSender: {}\nRecipient: {}\nContent: {}'.format(subject, sender, email, content))
         else:
