@@ -1,17 +1,57 @@
 {% extends "base.html" %}
 {% block content %}
+{% load static %}
 	<h1>KÅRSPEXETS FINLANDSTURNÉ 2019</h1>
+	<div class="col-8 offset-2 mb-5 embed-responsive embed-responsive-16by9">
+		<video class="embed-responsive-item" controls>
+		  <source src="{% static 'videos/teaser18-19.mp4' %}" type="video/mp4">
+			Teaser för Kårspexet18-19
+		</video>
+	</div>
   <p>
 		Välkommen på Kårspexet 18/19 <strong>"Agatha Christie eller Fint folk omkommer sent"</strong> den 23:e februari klockan 15 i SYK (Isonnevantie 8, Helsingfors).
 	</p>
   <p>
 		Efter föreställningen finns det möjlighet att fortsätta kvällen i gott sällskap och delta på Nachspex på Teknologföreningen (Otsvängen 22, Esbo).
 	</p>
-  <p>
+	<br />
+	<h1>Priser</h1>
+	<table class="table">
+		<thead>
+			<tr>
+				<th></th>
+				<th>Spex+Nachspex</th>
+				<th>Endast Spex</th>
+				<th>Endast Nachspex</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<th>Phux</th>
+				<td>25€</td>
+				<td>10€</td>
+				<td>18€</td>
+			</tr>
+			<tr>
+				<th>Studerande eller barn</th>
+				<td>30€</td>
+				<td>15€</td>
+				<td>18€</td>
+			</tr>
+			<tr>
+				<th>Inte studerande</th>
+				<td>40€</td>
+				<td>25€</td>
+				<td>18€</td>
+			</tr>
+		</table>
+  <!--<p>
 		Priset för föreställningen är 10/15/20&nbsp;€ (phux/studerande/övriga) och för Nachspexet 18&nbsp;€ (15&nbsp;€ alkoholfri). För både föreställningen och Nachspexet är priset 25/30/40&nbsp;€ (phux/studerande eller barn/övriga) eller 22/27/37&nbsp;€ (alkoholfri).
-	</p>
+	</p> -->
+	<p><strong>För alkoholfria avdras 3€ från priset</strong></p>
+	<br />
   <p>
-		Ifall ni har en rabattkod, kan ni mata in den i fältet "Rabattkod". Efter att ni klickat på fortsätt beräknar bokningssystemet ert nya pris. Ifall ni önskar boka flera biljetter för spexet, ber vi er vänligen boka flera enskilda biljettköp, och vid större biljettmängder eller övriga frågor kontakta <strong><a href="mailto:karspex@tf.fi">karspex@tf.fi</a></strong>
+		Ifall ni önskar boka flera biljetter för spexet, ber vi er vänligen boka flera enskilda biljettköp, och vid större biljettmängder eller övriga frågor kontakta <strong><a href="mailto:karspex@tf.fi">karspex@tf.fi</a></strong>
 	</p>
   <p>
 		Vi ses på spexet!
