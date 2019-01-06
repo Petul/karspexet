@@ -12,19 +12,35 @@ import uuid
 
 from .forms import registerForm
 
-def determine_price(spex, nachspex, guest_type, alcohol_free, coupon_code):
+def verify_coupon(coupon_code):
+    '''
+    @param: A code for a coupon. Max 8 characters (str)
+    @return: Tuple with:
+                - statuscode (int)
+                - coupon if found, otherwise None (DiscountCode)
+    Statuscodes:
+        1: All good
+        -1: DiscountCode doesn't exist
+        -2: Coupon is used
+    '''
+    try:
+        coupon = DiscountCode.objects.get(code=coupon_code)
+    except models.ObjectDoesNotExist:
+        return (-1, None)
+    if coupon.is_used():
+        return (-2, coupon)
+    return (1, coupon)
+
+
+def determine_price(spex, nachspex, guest_type, alcohol_free, coupon=None):
     prices = {
         'phux': 10,
         'student': 15,
-        'other': 25
+        'not_student': 25
     }
     price = 0
+    cheaper_used = False
     if spex:
-        try:
-            coupon = DiscountCode.objects.get(code=coupon_code)
-        except models.ObjectDoesNotExist:
-            coupon = None
-
         '''
         Use coupon if and only if:
             - It exists
@@ -33,11 +49,11 @@ def determine_price(spex, nachspex, guest_type, alcohol_free, coupon_code):
         '''
         if coupon and not coupon.is_used() and coupon.price < prices[guest_type]:
             price += coupon.price
-            coupon.times_used += 1
-            coupon.save()
         else:
             price += prices[guest_type]
-            
+            if coupon and coupon.price >= prices[guest_type]:
+                cheaper_used = True
+
     # Price for nachspex is 15€ if also spex and 18€ if only nachspex
     if nachspex:
         if spex:
@@ -47,7 +63,7 @@ def determine_price(spex, nachspex, guest_type, alcohol_free, coupon_code):
         # If alcoholfree price is reduced by 3€
         if alcohol_free:
             price -= 3
-    return price
+    return (price, cheaper_used)
 
 
 # Create your views here.
@@ -87,21 +103,11 @@ def form_page_view(request):
     return render(request, "index.html")
 
 def register(request):
-    # if this is a POST request we need to process the form data
     if request.method == 'POST':
-        # create a form instance and populate it with data from the request:
         form = registerForm(request.POST)
-        # check whether it's valid:
         if form.is_valid():
-
             form = form.cleaned_data
-            if form['student'] == 'student':
-                guest_type = 'student'
-            elif form['student'] == 'phux':
-                guest_type = 'phux'
-            else:
-                guest_type = 'other'
-
+            # Check type of ticket
             if form['register_choice'] == 'only_spex':
                 register_choice = "Endast spex"
                 spex = True
@@ -115,40 +121,15 @@ def register(request):
                 spex = True
                 nachspex = True
 
-            coupon_code = form['coupon']
-            coupon_valid = False
-            coupon_expired = False
-            coupon_used = 0
-            coupon_total_uses = 0
+            # Check validity of coupon if code was entered
+            status_code, coupon = None, None
+            if form['coupon']:
+                status_code, coupon = verify_coupon(form['coupon'])
 
-            if coupon_code != "":
-                coupon_entered = True
-                if DiscountCode.objects.filter(code=coupon_code).exists(): #Check if a code exists
-                    coupon = DiscountCode.objects.get(code=form['coupon'])
-                    if not coupon.is_used():
-                        coupon_valid = True
-                        coupon_used = coupon.times_used
-                        coupon_total_uses = coupon.uses
-                    else:
-                        coupon_expired = False
-                        coupon_valid = False
-                        coupon = None
-                else:
-                    coupon_valid = False
-                    coupon = None
-            else:
-                coupon = None
-                coupon_entered = False
-
-            cheaper_price_available = False
-            if guest_type == 'phux' and coupon != None:
-                if coupon.price >= 10:
-                    coupon = None
-                    cheaper_price_available = True
-                    coupon_entered = False
-
-            price = determine_price(spex, nachspex, guest_type, form['alcoholFree'], coupon)
-
+            # Check price
+            price, cheaper_used = determine_price(spex, nachspex, form['student'], form['alcoholFree'], coupon)
+            if cheaper_used:
+                status_code = 0
 
             context = {
                 'name': form['name'],
@@ -159,17 +140,12 @@ def register(request):
                 'alcohol_free' : form['alcoholFree'],
                 'register_choice': register_choice,
                 'spex': spex,
-                'student': guest_type,
+                'student': form['student'],
                 'nachspex': nachspex,
                 'price': price,
-                'coupon_valid': coupon_valid,
-                'coupon_code': coupon_code,
-                'coupon_entered': coupon_entered,
-                'coupon_expired': coupon_expired,
-                'coupon_used': coupon_used,
-                'coupon_total_uses': coupon_total_uses,
-                'cheaper_price_available': cheaper_price_available,
-                }
+                'coupon_status': status_code,
+                'coupon_code': form['coupon']
+            }
             return render(request, 'confirm.html', context)
 
     # if a GET (or any other method) we'll create a blank form
@@ -184,7 +160,7 @@ def send(request):
         email = request.POST['email']
         spex = request.POST['spex']
         nachspex = request.POST['nachspex']
-        coupon = request.POST['coupon']
+        coupon_code = request.POST['coupon']
         alcohol_free = request.POST['alcohol_free']
         avec = request.POST['avec']
         diet = request.POST['diet']
@@ -207,7 +183,8 @@ def send(request):
         else:
             alcohol_free = False
 
-        price = determine_price(spex, nachspex, guest_type, alcohol_free, coupon)
+        status_code, coupon = verify_coupon(form['coupon'])
+        price, cheaper_used = determine_price(spex, nachspex, guest_type, alcohol_free, coupon)
 
         new_participant = Participant(
             name=name,

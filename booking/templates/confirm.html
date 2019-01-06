@@ -4,25 +4,22 @@
 <div class="clearfix">
   <h2 class="center-block">Bekräfta din information</h2>
 </div>
-{% if cheaper_price_available %}
+{% if coupon_status == 1 %}
+  <div class="alert alert-success">
+    Med rabattkupongen <i>{{ coupon_code }}</i>.
+  </div>
+{% elif coupon_status == 0 %}
   <div class="alert alert-warning">
     Rabattkoden du har angett ger rätt till ett pris som är dyrare än ditt normala pris och har därför inte använts.
   </div>
-{% endif %}
-{% if coupon_entered %}
-  {% if coupon_valid %}
-    <div class="alert alert-success">
-      Med rabattkupongen <i>{{ coupon_code }}</i>. Kupongen har använts {{ coupon_used }}/{{ coupon_total_uses }} gånger.
-    </div>
-  {% elif coupon_expired %}
-    <div class="alert alert-danger">
-      Kupongen du angett har redan använts. Kontakta ambassaden vid oklara situationer.
-    </div>
-  {% else %}
-    <div class="alert alert-danger">
-      Tyvärr berättigar inte din kupong <i>{{ coupon_code }}</i> till rabatt. Kontrollera att du fyllt i koden korrekt!
-    </div>
-  {% endif %}
+{% elif coupon_status == -1 %}
+  <div class="alert alert-danger">
+    Hittade ingen rabatt med koden <i>{{ coupon_code }}</i>. Kontrollera att du fyllt i koden korrekt!
+  </div>
+{% elif coupon_status == -2 %}
+  <div class="alert alert-danger">
+    Kupongen du angett har redan använts. Kontakta ambassaden vid oklara situationer.
+  </div>
 {% endif %}
 <table class="table table-dark table-striped">
   <tr>

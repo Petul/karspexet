@@ -8,7 +8,7 @@ class PriceTestCase(TestCase):
         self.prices = {
             'phux': 10,
             'student': 15,
-            'other': 25
+            'not_student': 25
         }
         # 0 uses, 0 times_used
         unusable_coupon = DiscountCode.objects.create(code='code0', price=1, uses=0)
@@ -24,18 +24,23 @@ class PriceTestCase(TestCase):
         mul_used_coupon = DiscountCode.objects.create(code='code5', price=1, uses=2, times_used=2)
 
     def test_couponprices(self):
-        unusable_price = determine_price(True, False, 'other', False, 'code0')
-        normal_price = determine_price(True, False, 'other', False, 'code1')
-        used_price = determine_price(True, False, 'other', False, 'code2')
-        mul_nonused_price = determine_price(True, False, 'other', False, 'code3')
-        mul_halfused_price = determine_price(True, False, 'other', False, 'code4')
-        mul_used_price = determine_price(True, False, 'other', False, 'code5')
-        nonexistant_coupon_price = determine_price(True, False, 'other', False, '')
+        c0 = DiscountCode.objects.get(code='code0')
+        c1 = DiscountCode.objects.get(code='code1')
+        c2 = DiscountCode.objects.get(code='code2')
+        c3 = DiscountCode.objects.get(code='code3')
+        c4 = DiscountCode.objects.get(code='code4')
+        c5 = DiscountCode.objects.get(code='code5')
 
-        self.assertEqual(unusable_price, self.prices['other'])
+        unusable_price, cheaper_used = determine_price(True, False, 'not_student', False, c0)
+        normal_price, cheaper_used = determine_price(True, False, 'not_student', False, c1)
+        used_price, cheaper_used = determine_price(True, False, 'not_student', False, c2)
+        mul_nonused_price, cheaper_used = determine_price(True, False, 'not_student', False, c3)
+        mul_halfused_price, cheaper_used = determine_price(True, False, 'not_student', False, c4)
+        mul_used_price, cheaper_used = determine_price(True, False, 'not_student', False, c5)
+
+        self.assertEqual(unusable_price, self.prices['not_student'])
         self.assertEqual(normal_price, 1)
-        self.assertEqual(used_price, self.prices['other'])
+        self.assertEqual(used_price, self.prices['not_student'])
         self.assertEqual(mul_nonused_price, 1)
         self.assertEqual(mul_halfused_price, 1)
-        self.assertEqual(mul_used_price, self.prices['other'])
-        self.assertEqual(nonexistant_coupon_price, self.prices['other'])
+        self.assertEqual(mul_used_price, self.prices['not_student'])
