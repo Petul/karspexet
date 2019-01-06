@@ -12,7 +12,7 @@ import uuid
 
 from .forms import registerForm
 
-def determine_price(spex, nachspex, guest_type, alcohol_free, coupon):
+def determine_price(spex, nachspex, guest_type, alcohol_free, coupon_code):
     prices = {
         'phux': 10,
         'student': 15,
@@ -20,10 +20,25 @@ def determine_price(spex, nachspex, guest_type, alcohol_free, coupon):
     }
     price = 0
     if spex:
-        if coupon:
+        try:
+            coupon = DiscountCode.objects.get(code=coupon_code)
+        except models.ObjectDoesNotExist:
+            coupon = None
+
+        '''
+        Use coupon if and only if:
+            - It exists
+            - It's still valid (still has uses left)
+            - The price is less than it otherwise would be
+        '''
+        if coupon and not coupon.is_used() and coupon.price < prices[guest_type]:
             price += coupon.price
+            coupon.times_used += 1
+            coupon.save()
         else:
             price += prices[guest_type]
+            
+    # Price for nachspex is 15€ if also spex and 18€ if only nachspex
     if nachspex:
         if spex:
             price += 15
@@ -32,8 +47,6 @@ def determine_price(spex, nachspex, guest_type, alcohol_free, coupon):
         # If alcoholfree price is reduced by 3€
         if alcohol_free:
             price -= 3
-
-    print(price)
     return price
 
 
@@ -177,16 +190,6 @@ def send(request):
         diet = request.POST['diet']
         guest_type = request.POST['student']
 
-        if DiscountCode.objects.filter(code=coupon).exists():
-            coupon = DiscountCode.objects.get(code=coupon)
-            if not coupon.is_used():
-                coupon.times_used += 1
-                coupon.save()
-            else:
-                coupon = None
-        else:
-            coupon = None
-
         # Apparently the 'True' is not a Boolean and needs to be converted, wtf
         # TODO: Change to 0 and 1 to avoid this step
         if nachspex == 'True':
@@ -203,10 +206,6 @@ def send(request):
             alcohol_free = True
         else:
             alcohol_free = False
-
-        if guest_type == 'phux' and coupon != None:
-            if coupon.price >= 10:
-                coupon = None
 
         price = determine_price(spex, nachspex, guest_type, alcohol_free, coupon)
 
