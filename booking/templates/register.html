@@ -1,6 +1,57 @@
 {% extends "base.html" %}
 {% block content %}
-
+{% load bootstrap4 %}
+  <div class="col-10 offset-1">
+    <h2>Priser</h2>
+    <br />
+    <table class="table table-sm">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Spex+Nachspex</th>
+          <th>Spex</th>
+          <th>Nachspex</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>Phux</th>
+          <td>25€</td>
+          <td>10€</td>
+          <td>18€</td>
+        </tr>
+        <tr>
+          <th>Studerande eller barn</th>
+          <td>30€</td>
+          <td>15€</td>
+          <td>18€</td>
+        </tr>
+        <tr>
+          <th>Inte studerande</th>
+          <td>40€</td>
+          <td>25€</td>
+          <td>18€</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+<div class="container gold-border my-4 py-4">
+  <form action="/register/" method="post" class="register_form mx-5">
+    {% csrf_token %}
+    {% bootstrap_field form.name %}
+    {% bootstrap_field form.email %}
+    {% bootstrap_field form.register_choice field_class='register_choice'%}
+    {% bootstrap_field form.student field_class='student' form_group_class='form-group only_spex' %}
+    {% bootstrap_field form.alcoholFree form_group_class='form-group only_nachspex'%}
+    {% bootstrap_field form.diet form_group_class='form-group only_nachspex'%}
+    {% bootstrap_field form.avec form_group_class='form-group only_nachspex'%}
+    {% bootstrap_field form.coupon form_group_class='form-group only_spex'%}
+    {% bootstrap_field form.comment %}
+    {% buttons %}
+    <input type="submit" class="btn btn-lg btn-success btn-block" value="Fortsätt" />
+    {% endbuttons %}
+  </form>
 <script>
 function updateForm() {
   if (($(".register_choice select").val()) == 'only_nachspex') {
@@ -20,21 +71,4 @@ $(document).ready(function() {
   $(".register_choice").change(updateForm);
 });
 </script>
-
-{% load bootstrap4 %}
-<form action="/register/" method="post" class="register_form mx-5">
-  {% csrf_token %}
-  {% bootstrap_field form.name %}
-  {% bootstrap_field form.email %}
-  {% bootstrap_field form.register_choice field_class='register_choice'%}
-  {% bootstrap_field form.student field_class='student' form_group_class='form-group only_spex' %}
-  {% bootstrap_field form.alcoholFree form_group_class='form-group only_nachspex'%}
-  {% bootstrap_field form.diet form_group_class='form-group only_nachspex'%}
-  {% bootstrap_field form.avec form_group_class='form-group only_nachspex'%}
-  {% bootstrap_field form.coupon form_group_class='form-group only_spex'%}
-  {% bootstrap_field form.comment %}
-  {% buttons %}
-  <input type="submit" class="btn btn-lg btn-success btn-block" value="Fortsätt" />
-  {% endbuttons %}
-</form>
 {% endblock content %}

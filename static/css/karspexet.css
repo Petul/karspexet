@@ -4,10 +4,10 @@ body {
   font-size: 22px;
   color: white;
 }
-strong, h1 {
+strong, h1, h2, label {
   color: #CC8833;
 }
-div#content {
+div.gold-border {
   border: 5px solid #CC8833;
   border-radius: 10px;
 }
