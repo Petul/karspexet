@@ -23,9 +23,8 @@ class Participant(models.Model):
 
 
 class DiscountCode(models.Model):
-    code = models.CharField(max_length=8)
+    code = models.CharField(max_length=8, unique=True)
     price = models.FloatField()
-    #used = models.BooleanField(default = False)
     uses = models.IntegerField(default = 1)
     times_used = models.IntegerField(default = 0)
 
