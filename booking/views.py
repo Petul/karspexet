@@ -6,6 +6,7 @@ from django.shortcuts import render, render_to_response
 from django.template import RequestContext
 from booking.models import *
 from django.contrib.auth.decorators import login_required
+from karspexet.settings import DEBUG
 import datetime, math
 import uuid
 
@@ -75,7 +76,7 @@ def form_page_view(request):
     return render(request, "index.html")
 
 def register(request):
-# if this is a POST request we need to process the form data
+    # if this is a POST request we need to process the form data
     if request.method == 'POST':
         # create a form instance and populate it with data from the request:
         form = registerForm(request.POST)
@@ -187,9 +188,9 @@ def send(request):
                 coupon = None
         else:
             coupon = None
-        '''
-        Apparently the 'True' is not a Boolean and needs to be converted, wtf
-        '''
+
+        # Apparently the 'True' is not a Boolean and needs to be converted, wtf
+        # TODO: Change to 0 and 1 to avoid this step
         if nachspex == 'True':
             nachspex = True
         else:
@@ -205,26 +206,34 @@ def send(request):
         else:
             alcohol_free = False
 
-
         if guest_type == 'phux' and coupon != None:
             if coupon.price >= 10:
                 coupon = None
 
-
         price = determine_price(spex, nachspex, guest_type, alcohol_free, coupon)
-        print(price)
 
-        new_participant = Participant(name=name, email=email, spex=spex, nachspex=nachspex, alcoholfree=alcohol_free, diet=diet, avec=avec, comment=comment, student=guest_type, price=price)
+        new_participant = Participant(
+            name=name,
+            email=email,
+            spex=spex,
+            nachspex=nachspex,
+            alcoholfree=alcohol_free,
+            diet=diet,
+            avec=avec,
+            comment=comment,
+            student=guest_type,
+            price=price
+        )
 
         new_participant.uuid = uuid.uuid4()
         new_participant.save()
         ticket_url = 'https://karspex.teknologforeningen.fi/ticket/'+str(new_participant.uuid)
-        #ticket_url = '127.0.0.1:8000/ticket/'+str(new_participant.uuid)
-
-        print(ticket_url)
-        subject, sender, recipient = 'Anmälan till Kårspexets föreställning', 'Kårspexambassaden <karspex@teknolog.fi>', email
+        subject, sender = 'Anmälan till Kårspexets föreställning', 'Kårspexambassaden <karspex@teknolog.fi>'
         content = "Tack för din anmälan till Kårspexets Finlandsföreställning den 10 februari. \n Din biljett hittar du på "+ ticket_url +". Vänligen ta fram biljetten när du går in i teatern för att försnabba inträdet. \n Betala " + str(price) + " € till konto FI02 5723 0220 4788 41 (mottagare Kårspexambassaden) med för- och efternamn som meddelande. Betalningen ska vara framme senast 9.2.2018. Ifall betalningen inte hinner till detta, ber vi dig vänligen ta med jämna pengar till teatern.\n\nMed vänliga hälsningar,\nKårspexambassaden"
-        send_mail(subject, content, sender, [email], fail_silently=False)
+        if DEBUG:
+            print('Subject: {}\nSender: {}\nRecipient: {}\nContent: {}'.format(subject, sender, email, content))
+        else:
+            send_mail(subject, content, sender, [email], fail_silently=False)
 
         return HttpResponseRedirect('/register/thanks/')
     else:
