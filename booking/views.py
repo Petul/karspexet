@@ -13,29 +13,28 @@ import uuid
 from .forms import registerForm
 
 def determine_price(spex, nachspex, guest_type, alcohol_free, coupon):
+    prices = {
+        'phux': 10,
+        'student': 15,
+        'other': 25
+    }
     price = 0
-
+    # With spex&nachspex the price is spexprice + 15€ for nachspex
     if spex:
-        if coupon != None:
+        if coupon:
             price += coupon.price
         else:
-            if guest_type == 'student':
-                price += 15
-            elif guest_type =='phux':
-                price += 10
-            else:
-                price += 25
-
-    if nachspex and spex:
-        price += 15
+            price += prices[guest_type]
+    if nachspex:
+        if spex:
+            price += 15
+        else:
+            price += 18
+        # If alcoholfree price is reduced by 3€
         if alcohol_free:
             price -= 3
 
-    if nachspex and not spex: #only nachspex
-        price += 18
-        if alcohol_free:
-            price -= 3
-
+    print(price)
     return price
 
 
