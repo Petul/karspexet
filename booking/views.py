@@ -87,15 +87,6 @@ def ticket(request, participant_id):
     else:
         return render(request, 'index.html', {'error_message': "Det existerar inte biljett med denna id"})
 
-def coupon(request, coupon_code):
-    if DiscountCode.objects.filter(code = coupon_code).exists():
-        coupon = DiscountCode.objects.get(code = coupon_code)
-        #return discount code information
-        return render(request, 'coupon.html', {'times_used': coupon.times_used, 'uses': coupon.uses, 'price': coupon.price})
-    else:
-        return render(request, 'index.html', {'error_message': "Det existerar inte en kupong för koden du angett"})
-        #return error message
-
 def thanks(request):
     return render(request, "thanks.html")
 
