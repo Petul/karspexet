@@ -18,6 +18,12 @@ a.btn {
 a {
   color:inherit;
 }
+table.table {
+  border-radius: 20px;
+}
+table.table tr td {
+  border: none;
+}
 @media (min-width: 1000px) {
   #form-background {
     width: 70%;

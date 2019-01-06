@@ -24,7 +24,7 @@ class registerForm(forms.Form):
     student = forms.ChoiceField(
         widget = forms.Select,
         choices = STUDENT,
-        label = "Biljettyp",
+        label = "Välj prisgrupp",
         required = False,
     )
     alcoholFree = forms.BooleanField(label ="Alkoholfritt Nachspex", required = False)
