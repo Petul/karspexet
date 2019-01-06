@@ -19,7 +19,6 @@ def determine_price(spex, nachspex, guest_type, alcohol_free, coupon):
         'other': 25
     }
     price = 0
-    # With spex&nachspex the price is spexprice + 15€ for nachspex
     if spex:
         if coupon:
             price += coupon.price
