@@ -1,9 +1,9 @@
 from django import forms
 
 REGISTERING_OPTIONS = (
-    ('spex_and_nachspex', 'Spex och Nachspex'),
+#    ('spex_and_nachspex', 'Spex och Nachspex'),
     ('only_spex', 'Endast Spex'),
-    ('only_nachspex', 'Endast Nachspex')
+#    ('only_nachspex', 'Endast Nachspex')
 )
 
 STUDENT = (
