@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Deltagare på spexet</h1>
+</div>
+<table class="table table-dark table-striped">
+	<thead>
+		<tr>
+		  <th>Namn</th>
+			<th>Betalning ok</th>
+			<th>Pris</th>
+		  <th>Spex</th>
+		  <th>Nachspex</th>
+			<th>Anmälan skapad</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for participant in participants %}
+			<tr>
+			  <td>{{participant.name}}</td>
+				{% if participant.payment_ok %}
+				<td>{{participant.payment_ok}}</td>
+				{% else %}
+				<td class="bg-danger">{{participant.payment_ok}}</td>
+				{% endif %}
+				<td>{{participant.price}}</td>
+			  <td>{{participant.spex}}</td>
+			  <td>{{participant.nachspex}}</td>
+				<td>{{participant.created|date:"j.n.Y H:i"}}</td>
+			</tr>
+		{% endfor %}
+	</tbody>
+</table>
+{% endblock %}

@@ -28,4 +28,5 @@ urlpatterns = [
     url(r'^register/thanks/$', thanks),
     url(r'^ticket/(?P<participant_id>[0-9a-f-]+)/?$', ticket),
     url(r'^enrolled/$', enrolled),
+    url(r'^teater', teater)
 ]

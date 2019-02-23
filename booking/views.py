@@ -71,6 +71,11 @@ def determine_price(spex, nachspex, guest_type, alcohol_free, coupon=None):
 def enrolled(request):
     return render(request, 'enrolled.html', {'participants': Participant.objects.all()})
 
+@login_required(login_url='/admin')
+def teater(request):
+    return render(request, 'teater.html', {'participants': Participant.objects.all()})
+
+
 def ticket(request, participant_id):
     if Participant.objects.filter(uuid = participant_id).exists():
         participant = Participant.objects.get(uuid = participant_id)
