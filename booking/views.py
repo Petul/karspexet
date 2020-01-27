@@ -81,11 +81,11 @@ def ticket(request, participant_id):
         participant = Participant.objects.get(uuid = participant_id)
 
         context = {
-        'name': participant.name,
-        'student': participant.student,
-        'spex': participant.spex,
-        'nachspex': participant.nachspex,
-        'price': participant.price,
+          'name': participant.name,
+          'student': participant.student,
+          'spex': participant.spex,
+          'nachspex': participant.nachspex,
+          'price': participant.price,
         }
 
         return render(request, 'ticket.html', context)
@@ -202,7 +202,7 @@ def send(request):
 
         ticket_url = 'https://karspex.teknologforeningen.fi/ticket/{}'.format(new_participant.uuid)
         subject, sender = 'Anmälan till Kårspexets föreställning', 'Kårspexambassaden <karspex@teknolog.fi>'
-        content = "Tack för din anmälan till Kårspexets Finlandsföreställning den 23 februari.\nDin biljett hittar du på {}. Vänligen ta fram biljetten när du går in i teatern för att försnabba inträdet.\nBetala {}€ till konto FI28 4055 0010 5678 12 (mottagare Kårspexambassaden) med meddelandet \"Kårspex, Förnamn Efternamn\". Betalningen ska vara framme senast 22.2.2019. Ifall betalningen inte hinner till detta, ber vi dig vänligen ta med jämna pengar till teatern.\n\nMed vänliga hälsningar,\nKårspexambassaden.".format(ticket_url, price)
+        content = "Tack för din anmälan till Kårspexets Finlandsföreställning den 22 februari.\nDin biljett hittar du på {}. Vänligen ta fram biljetten när du går in i teatern för att försnabba inträdet.\nBetala {}€ till konto FI34 1124 3500 2457 77 (mottagare Kårspexambassaden) eller med MobilePay till numret +358504948298 med meddelandet \"Kårspex, Förnamn Efternamn\". Betalningen ska vara framme senast 22.2.2020. Ifall betalningen inte hinner till detta, ber vi dig vänligen ta med jämna pengar till teatern.\n\nMed vänliga hälsningar,\nKårspexambassaden.".format(ticket_url, price)
         if DEBUG:
             print('Subject: {}\nSender: {}\nRecipient: {}\nContent: {}'.format(subject, sender, email, content))
         else:
